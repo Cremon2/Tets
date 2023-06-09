@@ -1,0 +1,22 @@
+body {
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.list {
+    text-align: center;
+}
+
+.list a {
+    display: block;
+    margin: 10px 0;
+    font-size: 18px;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    margin-top: 50%;
+}

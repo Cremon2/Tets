@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Tetris phone version</title>
+  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+  <canvas width="320" height="640" id="game"></canvas>
+  <div id="score">Score: <span id="score-value">0</span></div>
+  <button id="reset-btn">Reset</button>
+
+  <div class="game-container">
+    <div class="playfield">
+      
+    </div>
+    <div class="buttons">
+      <div class="row">
+        <button id="up-btn">Up</button>
+      </div>
+      <div class="row">
+        <button id="left-btn">Left</button>
+        <button id="down-btn">Down</button>
+        <button id="right-btn">Right</button>
+      </div>
+      <div class="row">
+        <button id="drop-btn">Drop</button>
+      </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  touch-action: none;
+}
+
+body {
+  overflow: hidden;
+}
+
+body {
+  background: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  border: 1px solid rgb(255, 248, 248);
+}
+
+#score {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  color: rgb(0, 0, 0);
+}
+
+#reset-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  padding: 8px 20px;
+  background-color: #4CAF50;
+  color: rgb(0, 0, 0);
+  border: none;
+  cursor: pointer;
+}
+
+/* Add grid lines */
+#game {
+  border: 1px solid #000000;
+  position: relative;
+}
+
+#game::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(to right, transparent 1px, #000000 1px), linear-gradient(to bottom, transparent 1px, #ffffff 1px);
+  background-size: 32px 32px;
+}
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.playfield {
+  position: relative;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.buttons button {
+  font-size: 14px;
+  padding: 10px 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.buttons button:hover {
+  background-color: #000000;
+}
+
+#drop-btn {
+  width: 150px;
+  padding: 6px 10px;
+}
+
+#up-btn {
+  width: 80px;
+  padding: 8px 12px;
+}
+
+#right-btn, #left-btn {
+  padding: 8px 12px;
+}
+
+
+.drop-shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+}
+.game-container {
+  touch-action: manipulation;
+}
