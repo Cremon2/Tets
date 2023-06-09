@@ -73,43 +73,52 @@ canvas {
 .buttons {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.row {
-  display: flex;
   justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
 .buttons button {
   font-size: 14px;
   padding: 10px 12px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: transparent;
+  color: rgb(0, 0, 0);
   border: none;
   cursor: pointer;
   margin: 5px;
 }
 
 .buttons button:hover {
-  background-color: #000000;
+  background-color: transparent;
 }
 
 #drop-btn {
   width: 150px;
   padding: 6px 10px;
+  margin-top: 10px;
 }
 
 #up-btn {
   width: 80px;
   padding: 8px 12px;
+  order: -1;
 }
 
-#right-btn, #left-btn {
-  padding: 8px 12px;
+#left-btn {
+  order: 0;
 }
 
+#down-btn {
+  order: 1;
+}
+
+#right-btn {
+  order: 2;
+}
 
 .drop-shadow {
   position: absolute;
@@ -119,7 +128,4 @@ canvas {
   height: 100%;
   pointer-events: none;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
-}
-.game-container {
-  touch-action: manipulation;
 }
