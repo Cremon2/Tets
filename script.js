@@ -306,11 +306,46 @@ function updateScore(increase) {
   scoreElement.textContent = newScore;
 }
 
-document.getElementById('up-btn').addEventListener('click', rotateTetrominos);
-document.getElementById('left-btn').addEventListener('click', moveLefts);
-document.getElementById('right-btn').addEventListener('click', moveRights);
-document.getElementById('down-btn').addEventListener('click', moveDowns);
-document.getElementById('drop-btn').addEventListener('click', drops);
+// Add event listeners for button clicks
+document.getElementById('up-btn').addEventListener('mousedown', function() {
+  rotateTetrominos();
+  interval = setInterval(rotateTetrominos, 200); // Adjust the interval as needed
+});
+document.getElementById('up-btn').addEventListener('mouseup', function() {
+  clearInterval(interval);
+});
+
+document.getElementById('left-btn').addEventListener('mousedown', function() {
+  moveLefts();
+  interval = setInterval(moveLefts, 200); // Adjust the interval as needed
+});
+document.getElementById('left-btn').addEventListener('mouseup', function() {
+  clearInterval(interval);
+});
+
+document.getElementById('right-btn').addEventListener('mousedown', function() {
+  moveRights();
+  interval = setInterval(moveRights, 200); // Adjust the interval as needed
+});
+document.getElementById('right-btn').addEventListener('mouseup', function() {
+  clearInterval(interval);
+});
+
+document.getElementById('down-btn').addEventListener('mousedown', function() {
+  moveDowns();
+  interval = setInterval(moveDowns, 200); // Adjust the interval as needed
+});
+document.getElementById('down-btn').addEventListener('mouseup', function() {
+  clearInterval(interval);
+});
+
+document.getElementById('drop-btn').addEventListener('mousedown', function() {
+  drops();
+  interval = setInterval(drops, 200); // Adjust the interval as needed
+});
+document.getElementById('drop-btn').addEventListener('mouseup', function() {
+  clearInterval(interval);
+});
 
 // Add event listener to handle keyboard input
 document.addEventListener('keydown', function(e) {
@@ -339,6 +374,8 @@ document.addEventListener('keydown', function(e) {
     drops();
   }
 });
+
+// Rest of the code...
 
 function moveLefts() {
   const col = tetromino.col - 1;
@@ -381,43 +418,23 @@ function drops() {
   }
 }
 
-function handleTouchStart(event) {
-  touchStartX = event.touches[0].clientX;
-  touchStartY = event.touches[0].clientY;
-}
-
-function handleTouchMove(event) {
-  event.preventDefault();
-  touchEndX = event.touches[0].clientX;
-  touchEndY = event.touches[0].clientY;
-}
-
-function handleTouchEnd() {
-  const touchDiffX = touchEndX - touchStartX;
-  const touchDiffY = touchEndY - touchStartY;
-
-  // Detect swipe direction based on touch difference
-  if (Math.abs(touchDiffX) > Math.abs(touchDiffY)) {
-    // Horizontal swipe
-    if (touchDiffX > 0) {
-      moveRights();
-    } else {
-      moveLefts();
-    }
-  } else {
-    // Vertical swipe
-    if (touchDiffY > 0) {
-      moveDowns();
-    } else {
-      rotateTetrominos();
+function resetGame() {
+  playfield.splice(-2); // Remove last two rows
+  for (let row = -2; row < 20; row++) {
+    playfield[row] = [];
+    for (let col = 0; col < 10; col++) {
+      playfield[row][col] = 0;
     }
   }
+  tetrominoSequence.length = 0;
+  tetromino = getNextTetromino();
+  count = 0;
+  gameOver = false;
+  updateScore(0);
+  cancelAnimationFrame(rAF); // Cancel the ongoing animation frame
+  rAF = requestAnimationFrame(loop); // Start a new animation frame
 }
 
-document.querySelector('.game-container').addEventListener('touchstart', handleTouchStart, false);
-document.querySelector('.game-container').addEventListener('touchmove', handleTouchMove, false);
-document.querySelector('.game-container').addEventListener('touchend', handleTouchEnd, false);
-
-
+// Add event listener to handle reset button click
 document.getElementById('reset-btn').addEventListener('click', resetGame);
 rAF = requestAnimationFrame(loop);
