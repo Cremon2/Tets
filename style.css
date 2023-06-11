@@ -96,7 +96,7 @@ canvas {
   color: rgb(0, 0, 0);
   border: none;
   cursor: pointer;
-  margin: 8px;
+  margin: 2px;
 }
 
 .buttons button:hover {
