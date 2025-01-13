@@ -19,8 +19,6 @@ export class GameLogic {
         this.resetButton();
         this.clearedRows = 0;
         this.score = 0;
-        this.currentTetromino = null;
-        this.nextTetromino = null;
 
         // Initialize the playfield (clear all cells)
         for (let row = -2; row < 20; row++) {
@@ -87,19 +85,19 @@ export class GameLogic {
         let collisionDetected = false;
         for (let row = 0; row < this.currentTetromino.matrix.length; row++) {
             for (let col = 0; col < this.currentTetromino.matrix[row].length; col++) {
-                if (this.currentTetromino.matrix[row][col]) {
-                    // If the block goes out of bounds or collides with existing blocks, trigger game over
-                    if (this.currentTetromino.row + row < 0 || this.playfield[this.currentTetromino.row + row][this.currentTetromino.col + col] !== 0) {
-                        collisionDetected = true;
-                        break;
-                    }
+            if (this.currentTetromino.matrix[row][col]) {
+                // If the block goes out of bounds or collides with existing blocks, trigger game over
+                if (this.currentTetromino.row + row < 0 || this.playfield[this.currentTetromino.row + row][this.currentTetromino.col + col] !== 0) {
+                collisionDetected = true;
+                break;
                 }
+            }
             }
             if (collisionDetected) break;
         }
-    
-        if (collisionDetected) {
-            return this.showGameOver();  // Trigger game over if there's a collision
+        
+        if (collisionDetected || this.currentTetromino.row < 0) {
+            return this.showGameOver();  // Trigger game over if there's a collision or tetromino reaches the top
         }
     
          // Render the current tetromino shape visually
@@ -146,7 +144,12 @@ export class GameLogic {
     
         // After placing, move to the next tetromino
         this.currentTetromino = nextTetromino;
-        this.nextTetromino = this.getNextTetromino();
+        
+        // Check if tetromino1 has touched the bottom or dropped
+        if (collisionDetected) {
+            this.currentTetromino = tetromino2;
+            this.nextTetromino = this.getNextTetromino();
+        }
     }
     
     showGameOver() {
