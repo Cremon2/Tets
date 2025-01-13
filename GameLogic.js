@@ -6,7 +6,7 @@ export class GameLogic {
     constructor() {
         this.canvas = document.getElementById('game');
         this.context = this.canvas.getContext('2d');
-        this.HighScore = localStorage.getItem('high-score');
+        this.highScore = parseInt(localStorage.getItem('high-score')) || 0;
         this.grid = 32;
         this.playfield = [];
         this.tetromino = null;
@@ -19,6 +19,8 @@ export class GameLogic {
         this.resetButton();
         this.clearedRows = 0;
         this.score = 0;
+        this.currentTetromino = null;
+        this.nextTetromino = null;
 
         // Initialize the playfield (clear all cells)
         for (let row = -2; row < 20; row++) {
@@ -39,7 +41,6 @@ export class GameLogic {
         return this.shapeLogic.isValidMove(matrix, cellRow, cellCol, this.playfield);
     }
 
-    // Get the next tetromino from the tetromino sequence
     getNextTetromino() {
         if (this.tetrominoSequence.length === 0) {
             this.shapeLogic.generateSequence(this.tetrominoSequence);
@@ -54,93 +55,150 @@ export class GameLogic {
         return { name, matrix, row, col };
     }
 
-    showNextTetromino(tetromino) {
-        
+    startGame() {
+        this.generateTetrominoInterval();
+        this.placeTetromino();
     }
 
+    generateTetromino() {
+        let tetromino2 = this.getNextTetromino(); // Get next tetromino
+        let tetromino1 = JSON.parse(JSON.stringify(tetromino2)); // Create a deep copy of the tetromino
+    
+        if (!this.currentTetromino) {
+            this.currentTetromino = tetromino1;
+            this.nextTetromino = tetromino2;
+        } else {
+            this.currentTetromino = tetromino2;
+            this.nextTetromino = this.getNextTetromino();
+        }
+    
+        return [this.currentTetromino, this.nextTetromino];
+    }    
+    
     placeTetromino() {
-        for (let row = 0; row < this.tetromino.matrix.length; row++) {
-            for (let col = 0; col < this.tetromino.matrix[row].length; col++) {
-                if (this.tetromino.matrix[row][col]) {
-                    if (this.tetromino.row + row < 0) {
-                        return this.showGameOver();
+        // Ensure currentTetromino is initialized if it's not already
+        if (!this.currentTetromino) {
+            this.currentTetromino = this.getNextTetromino();  // Get the first tetromino
+        }
+    
+        let nextTetromino = this.getNextTetromino(); // Get the next tetromino
+    
+        // Check for game over only if placing the current tetromino is not possible
+        let collisionDetected = false;
+        for (let row = 0; row < this.currentTetromino.matrix.length; row++) {
+            for (let col = 0; col < this.currentTetromino.matrix[row].length; col++) {
+                if (this.currentTetromino.matrix[row][col]) {
+                    // If the block goes out of bounds or collides with existing blocks, trigger game over
+                    if (this.currentTetromino.row + row < 0 || this.playfield[this.currentTetromino.row + row][this.currentTetromino.col + col] !== 0) {
+                        collisionDetected = true;
+                        break;
                     }
-
-                    this.playfield[this.tetromino.row + row][this.tetromino.col + col] = this.tetromino.name;
+                }
+            }
+            if (collisionDetected) break;
+        }
+    
+        if (collisionDetected) {
+            return this.showGameOver();  // Trigger game over if there's a collision
+        }
+    
+         // Render the current tetromino shape visually
+         const currentContainer = document.getElementById('current');
+         currentContainer.innerHTML = '';  // Clear the previous content
+     
+         const matrix = this.currentTetromino.matrix;
+     
+         // Create a grid for the current tetromino shape
+         for (let row = 0; row < matrix.length; row++) {
+             const rowElement = document.createElement('div');
+             rowElement.style.display = 'flex';  // Row as a flex container
+     
+             for (let col = 0; col < matrix[row].length; col++) {
+                 const cellElement = document.createElement('div');
+                 cellElement.style.width = '20px';  // Set width for each block
+                 cellElement.style.height = '20px';  // Set height for each block
+                 cellElement.style.margin = '1px';  // Small space between blocks
+     
+                 // If there is a block at this position, color it
+                 if (matrix[row][col]) {
+                     cellElement.style.backgroundColor = this.tetrisShape.getColor(this.currentTetromino.name);
+                 } else {
+                     cellElement.style.backgroundColor = 'transparent';  // Empty space
+                 }
+     
+                 rowElement.appendChild(cellElement);
+             }
+     
+             currentContainer.appendChild(rowElement);
+         }
+     
+         // Update the "current" tetromino name (optional, you can keep this for debugging or visual purposes)
+         document.getElementById('current').setAttribute('data-tetromino-name', this.currentTetromino.name);
+    
+        // Place the current tetromino on the playfield
+        for (let row = 0; row < this.currentTetromino.matrix.length; row++) {
+            for (let col = 0; col < this.currentTetromino.matrix[row].length; col++) {
+                if (this.currentTetromino.matrix[row][col]) {
+                    this.playfield[this.currentTetromino.row + row][this.currentTetromino.col + col] = this.currentTetromino.name;
                 }
             }
         }
-        let clearedRows = 0;
-        let score = this.score;
-        let HighScore = this.HighScore;
-
-        for (let row = this.playfield.length - 1; row >= 0;) {
-            if (this.playfield[row].every(cell => !!cell)) {
-                clearedRows++;
-                this.playfield.splice(row, 1);
-                this.playfield.unshift(Array(10).fill(0));
-
-                score += this.calculateScore(clearedRows);
-                this.updateScore(score);
-
-                if (clearedRows > score) {
-                    HighScore = clearedRows;
-                    this.updateHighScore(HighScore);
-                }
-            } else {
-                row--;
-            }
-        }
-
-        this.tetromino = this.getNextTetromino();
+    
+        // After placing, move to the next tetromino
+        this.currentTetromino = nextTetromino;
+        this.nextTetromino = this.getNextTetromino();
     }
-
+    
     showGameOver() {
-        let HighScore = this.HighScore; 
         cancelAnimationFrame(this.rAF);
         this.gameOver = true;
-
         this.context.fillStyle = 'black';
         this.context.globalAlpha = 0.75;
         this.context.fillRect(0, this.canvas.height / 2 - 30, this.canvas.width, 60);
-
         this.context.fillStyle = 'white';
         this.context.font = '36px monospace';
         this.context.textAlign = 'center';
         this.context.textBaseline = 'middle';
         this.context.fillText('GAME OVER!', this.canvas.width / 2, this.canvas.height / 2);
 
-        if (this.score > HighScore) {
-            HighScore = this.score;
-            this.updateHighScore(HighScore);
+        // Update high score when game ends
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            this.updateHighScore(this.highScore);
         }
 
         this.resetButton();
     }
 
     updateHighScore(value) {
+        // Update the high score display
         const highScoreElement = document.getElementById('high-score-value');
         if (highScoreElement) {
             highScoreElement.textContent = value;
         }
-    }
+    
+        // Store the new high score in localStorage if it is higher
+        const currentHighScore = parseInt(localStorage.getItem('high-score')) || 0;
+        if (value > currentHighScore) {
+            localStorage.setItem('high-score', value);
+        }
+    }    
 
     resetButton() {
         const resetButton = document.getElementById('reset-btn');
-        resetButton.addEventListener('click', () => {
-            this.resetGame();
-            resetButton.removeEventListener('click', resetButtonClick);
-            resetButton.blur(); // Remove active state
-        });
-
+        
+        // Define the event listener function
         const resetButtonClick = () => {
             this.resetGame();
             resetButton.removeEventListener('click', resetButtonClick);
             resetButton.blur(); // Remove active state
         };
-        
-        this.updateHighScore(this.HighScore);
+
+        // Remove any existing event listener before adding a new one
+        resetButton.removeEventListener('click', resetButtonClick);
         resetButton.addEventListener('click', resetButtonClick);
+
+        this.updateHighScore(this.highScore);
     }
 
     updateScore(score) {
@@ -148,18 +206,10 @@ export class GameLogic {
         scoreElement.textContent = score;
         this.score = score;
 
-        if (score > this.HighScore) {
-            this.HighScore = score;
-            localStorage.setItem('highScore', this.HighScore);
-            this.updateHighScore(this.HighScore);
+        if (score > this.highScore) {
+            this.highScore = score;
+            this.updateHighScore(this.highScore);
         }
-    }
-
-    updateHighScore(value) {
-        const highScoreElement = document.getElementById('high-score-value');
-            if (highScoreElement) {
-                highScoreElement.textContent = value;
-            }
     }
 
     resetGame() {
@@ -170,7 +220,7 @@ export class GameLogic {
                 this.playfield[row][col] = 0;
             }
         }
-    
+
         this.tetrominoSequence.length = 0;
         this.tetromino = this.getNextTetromino();
         this.count = 0;
