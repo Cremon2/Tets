@@ -86,3 +86,10 @@ canvas {
   pointer-events: none;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
 }
+
+#next {
+  position: absolute;
+  top: 100px;
+  right: 0;
+  border: 1px solid #000000;
+}
