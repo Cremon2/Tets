@@ -23,13 +23,21 @@ body {
   justify-content: center;
 }
 
-canvas {
+canvas:first-child {
   border: 1px solid rgb(255, 248, 248);
 }
 
 #score {
   position: absolute;
   top: 20px;
+  right: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  color: rgb(0, 0, 0);
+}
+#high-score {
+  position: absolute;
+  top: 60px;
   right: 20px;
   font-family: Arial, sans-serif;
   font-size: 24px;
@@ -85,4 +93,21 @@ canvas {
   height: 100%;
   pointer-events: none;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 5rcap;
+}
+
+.block h1 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+.game-container #current,.game-container #next,.game-container #hold {
+  border: 1px solid #000;
+  width: 100px;
+  padding: 10px;
 }
